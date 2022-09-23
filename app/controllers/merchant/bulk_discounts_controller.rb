@@ -1,11 +1,11 @@
 class Merchant::BulkDiscountsController < Merchant::BaseController
-
+  before_action :set_discount, only: [:show, :destroy, :edit]
   def index
     @discounts = @merchant.bulk_discounts
   end
 
   def show
-    @discount = BulkDiscount.find(params[:id])
+
   end
 
   def new
@@ -20,10 +20,13 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
   end
 
   def destroy
-    @discount = BulkDiscount.find(params[:id])
     @discount.destroy
     flash.notice = "Discount deleted"
     redirect_to merchant_bulk_discounts_path(@merchant)
+  end
+
+  def edit
+
   end
 
   private
@@ -33,5 +36,9 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
       :discount_percent, 
       :quantity_threshold
     )
+  end
+
+  def set_discount
+    @discount = BulkDiscount.find(params[:id])
   end
 end
