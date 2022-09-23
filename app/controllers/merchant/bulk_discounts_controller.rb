@@ -1,5 +1,5 @@
 class Merchant::BulkDiscountsController < Merchant::BaseController
-  before_action :set_discount, only: [:show, :destroy, :edit]
+  before_action :set_discount, only: [:show, :destroy, :edit, :update]
   def index
     @discounts = @merchant.bulk_discounts
   end
@@ -9,7 +9,7 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
   end
 
   def new
-    @new_discount = @merchant.bulk_discounts.new
+    @discount = @merchant.bulk_discounts.new
   end
 
   def create
@@ -27,6 +27,13 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
 
   def edit
 
+  end
+
+  def update
+    @discount.update(bulk_discount_params)
+    @discount.save
+    flash.notice = "Discount updated"
+    redirect_to merchant_bulk_discount_path(@merchant, @discount)
   end
 
   private
