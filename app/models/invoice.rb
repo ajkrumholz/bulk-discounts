@@ -14,7 +14,11 @@ class Invoice < ApplicationRecord
     self.items.where(items: { merchant_id: merchant.id } ).distinct
   end
 
-  def calculate_invoice_revenue(merchant)
+  def calculate_invoice_revenue
+    Invoice.joins(:items).where(id: self.id).sum('quantity*invoice_items.unit_price')
+  end
+
+  def calculate_merchant_invoice_revenue(merchant)
     Invoice.joins(:items).where(id: self.id, items: { merchant_id: merchant.id }).sum('quantity*invoice_items.unit_price')
   end
 
@@ -22,7 +26,7 @@ class Invoice < ApplicationRecord
     Invoice.joins(items: [merchant: :bulk_discounts]).where(id: self.id, items: { merchant_id: merchant.id}).select('items.id as item_id, bulk_discounts.id, invoice_items.unit_price, quantity, quantity_threshold, discount_percent')
   end
 
-  def calculate_discounted_revenue(merchant)
+  def calculate_merchant_discounted_revenue(merchant)
     discounted = item_discount(merchant).where.not('quantity < quantity_threshold')
     discounted_items = discounted.map { |item| item.item_id }
     discounted_revenues_ary = discounted.select('(quantity*invoice_items.unit_price)*(100-discount_percent)/100 as revenue').map { |item| [item.item_id, item.revenue] }

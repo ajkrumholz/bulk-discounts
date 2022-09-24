@@ -114,29 +114,29 @@ RSpec.describe Invoice, type: :model do
       let!(:invoice_item_6) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: flowers.id, quantity: 15, unit_price: 1300, status:"packaged" )}
 
       
-      describe '#calculate_invoice_revenue(merchant)' do
+      describe '#calculate_merchant_invoice_revenue(merchant)' do
         it 'takes a merchant as an arg and returns the total amount of revenue that invoice generated for that merchant' do
-        expect(alaina_invoice1.calculate_invoice_revenue(jewlery_city)).to eq(58500)
-        expect(alaina_invoice1.calculate_invoice_revenue(carly_silo)).to eq(39000)
+        expect(alaina_invoice1.calculate_merchant_invoice_revenue(jewlery_city)).to eq(58500)
+        expect(alaina_invoice1.calculate_merchant_invoice_revenue(carly_silo)).to eq(39000)
         end
       end
 
-      describe '#calculate_discounted_revenue(merchant)' do
+      describe '#calculate_merchant_discounted_revenue(merchant)' do
 
         it 'calculates disc. revenue when no discounts apply' do
           jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 22)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 16)
 
-          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(58500)
-          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(39000)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(58500)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(39000)
         end
 
         it 'calculates disc. revenue when a single discount applies' do
           jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 15)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
 
-          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(49400)
-          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(35100)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(49400)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(35100)
         end
 
         it 'calculates disc. revenue when a single discount applies but multiple discounts are present' do
@@ -145,8 +145,8 @@ RSpec.describe Invoice, type: :model do
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 16)
 
-          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(49400)
-          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(35100)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(49400)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(35100)
         end
 
         it 'calculates disc revenue when multiple discounts apply' do
@@ -155,8 +155,8 @@ RSpec.describe Invoice, type: :model do
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
           carly_silo.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 14)
 
-          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(46800)
-          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(34125)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(46800)
+          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(34125)
         end
       end
     end
