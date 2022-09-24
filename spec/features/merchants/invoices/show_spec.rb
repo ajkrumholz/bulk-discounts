@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe 'Merchant Index Show Page' do
 
-  # test data collapsed here
   let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
   let!(:carly_silo) { Merchant.create!(name: "Carly Simon's Candy Silo")}
 
@@ -109,7 +108,9 @@ RSpec.describe 'Merchant Index Show Page' do
       it 'shows a link to the bulk discount show page for the discount that was applied, if any' do
         discount_1 = jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
         discount_2 = jewlery_city.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 35)
+
         visit merchant_invoice_path(jewlery_city, invoice_1)
+        
         within("#item_#{gold_earrings.id}") do
           expect(page).to_not have_link ("Applied #{discount_1.discount_percent}% Discount")
         end
