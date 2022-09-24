@@ -37,7 +37,7 @@ end
   #   Invoice.joins(items: [merchant: :bulk_discounts]).where(id: self.id, items: { merchant_id: merchant.id}).select('items.id as item_id, bulk_discounts.id, invoice_items.unit_price, quantity, quantity_threshold, discount_percent')
   # end
 
-  # def merchant_discounted_revenue(merchant)
+  # def merchant_discount_revenue(merchant)
   #   require 'pry'; binding.pry
   #   discounted = item_discount(merchant).where.not('quantity < quantity_threshold')
   #   discounted_items = discounted.map { |item| item.item_id }
@@ -52,6 +52,6 @@ end
   # end
 
 
-  # def merchant_discounted_revenue(merchant)
+  # def merchant_discount_revenue(merchant)
   #   merchant_invoice_revenue(merchant) - merchant_discount(merchant)
   # end

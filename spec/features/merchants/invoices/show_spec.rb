@@ -105,14 +105,13 @@ RSpec.describe 'Merchant Index Show Page' do
         
         visit merchant_invoice_path(jewlery_city, invoice_1)
         
-        expect(page).to have_content("Total Revenue After Bulk Discount: $#{sprintf("%.2f",invoice_1.merchant_discounted_revenue(jewlery_city)/100.to_f)}")
+        expect(page).to have_content("Total Revenue After Bulk Discount: $#{sprintf("%.2f",invoice_1.merchant_discount_revenue(jewlery_city)/100.to_f)}")
       end
 
       it 'shows a link to the bulk discount show page for the discount that was applied, if any' do
         discount_1 = jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 5)
         discount_2 = jewlery_city.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 6)
         visit merchant_invoice_path(jewlery_city, invoice_1)
-        save_and_open_page
         # within("#item_#{gold_earrings.id}") do
 
         # end

@@ -9,7 +9,7 @@
 <div id="total_invoice_revenue">
 <p>Total Revenue From This Invoice: <%= price_round(@invoice.merchant_invoice_revenue(@merchant))%></p>
 </div>
-<p>Total Revenue After Bulk Discount: <%= price_round(@invoice.merchant_discounted_revenue(@merchant)) %></p>
+<p>Total Revenue After Bulk Discount: <%= price_round(@invoice.merchant_discount_revenue(@merchant)) %></p>
 <h3>Customer:</h3>
 <p style='margin-left:20px'><%= @invoice.customer.name %></p>
 
