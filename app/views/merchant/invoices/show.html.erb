@@ -7,12 +7,13 @@
 <p>Status: <%= @invoice.status %></p>
 <p>Created at: <%= @invoice.created_at.strftime("%A, %B %d, %Y") %></p>
 <div id="total_invoice_revenue">
-<p>Total Revenue From This Invoice: <%= price_round(@invoice.calculate_invoice_revenue)%></p>
+<p>Total Revenue From This Invoice: <%= price_round(@invoice.calculate_merchant_invoice_revenue(@merchant))%></p>
 </div>
+<p>Total Revenue After Bulk Discount: <%= price_round(@invoice.calculate_merchant_discounted_revenue(@merchant)) %></p>
 <h3>Customer:</h3>
 <p style='margin-left:20px'><%= @invoice.customer.name %></p>
 
-<h3>Itemson this Invoice </h3>
+<h3>Items on this Invoice </h3>
 <table id="invoice_items">
   <tr>
     <th>Item Name</th>
