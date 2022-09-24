@@ -10,6 +10,10 @@ class Invoice < ApplicationRecord
     where("status = 2").order(:created_at)
   end
 
+  def customer_name
+    customer.name
+  end
+  
   def merchant_items(merchant)
     self.items.where(items: { merchant_id: merchant.id } ).distinct
   end

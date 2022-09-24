@@ -20,4 +20,12 @@ class InvoiceItem < ApplicationRecord
   def applicable_discounts
     item.merchant.bulk_discounts.where('quantity_threshold <= ?', quantity)
   end
+
+  def applied_discount_pct
+    applied_discount.discount_percent
+  end
+
+  def item_name
+    item.name
+  end
 end

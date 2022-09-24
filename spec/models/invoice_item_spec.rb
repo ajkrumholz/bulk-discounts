@@ -5,19 +5,10 @@ RSpec.describe InvoiceItem, type: :model do
     it { should belong_to(:item) }
   end
 
-  before(:each) do
-    # @instance_var = Something.create!(input)
-  end
-
-  describe 'class methods' do
-    describe '#search' do
-      it 'returns partial matches' do
-       #method goes here
-      end
-    end
-  end
-
   describe 'instance methods' do
+
+  
+
     describe '#discount' do
       let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
       let!(:carly_silo) { Merchant.create!(name: "Carly Simon's Candy Silo")}
@@ -73,7 +64,28 @@ RSpec.describe InvoiceItem, type: :model do
         expect(invoice_item_3.invoice_item_revenue).to eq(11000)
       end
 
+      describe 'applied_discount_pct' do
+        it 'returns the discount percent of the applied discount' do
+          discount_1 = jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 10)
+
+          expect(invoice_item_1.applied_discount_pct).to eq(20)
+        end
+      end
+
     end
+
+    describe '#item_name' do
+      let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
+      let!(:gold_earrings) { jewlery_city.items.create!(name: "Gold Earrings", description: "14k Gold 12' Hoops", unit_price: 12000) }
+      let!(:alaina) { Customer.create!(first_name: "Alaina", last_name: "Kneiling")}
+      let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
+      let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: gold_earrings.id, quantity: 10, unit_price: 1300, status:"packaged" )}
+
+      it 'returns the string name of the item it represents' do
+        expect(invoice_item_1.item_name).to eq("Gold Earrings")
+      end
+    end
+    
   end
 
 end

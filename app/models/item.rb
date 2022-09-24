@@ -14,5 +14,5 @@ class Item < ApplicationRecord
 
   def invoice_item(invoice)
     InvoiceItem.select("invoice_items.*").where(item_id: self.id, invoice_id: invoice.id).order(created_at: :desc).first
-  end
+  end  
 end

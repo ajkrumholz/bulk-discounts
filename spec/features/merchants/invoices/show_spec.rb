@@ -18,9 +18,9 @@ RSpec.describe 'Merchant Index Show Page' do
   let!(:invoice_1) { alaina.invoices.create!(status: "completed")}
   let!(:invoice_2) { alaina.invoices.create!(status: "in_progress")}
 
-  let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-  let!(:invoice_item_2) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: gold_earrings.id, quantity: 6, unit_price: 1111, status:"packaged" )}
-  let!(:invoice_item_3) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: things.id, quantity: 10, unit_price: 2014, status:"packaged" )}
+  # let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+  let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: gold_earrings.id, quantity: 10, unit_price: 1111, status:"packaged" )}
+  let!(:invoice_item_2) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: things.id, quantity: 34, unit_price: 2014, status:"packaged" )}
   let!(:invoice_item_3) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: silver_necklace.id, quantity: 7, unit_price: 1500, status:"packaged" )}
   let!(:invoice_item_4) { InvoiceItem.create!(invoice_id: invoice_1.id, item_id: licorice.id, quantity: 4, unit_price: 1300, status:"packaged" )}
 
@@ -51,9 +51,7 @@ RSpec.describe 'Merchant Index Show Page' do
         within("#invoice_items") do
           expect(page).to have_content(gold_earrings.name)
           expect(page).to have_content(silver_necklace.name)
-          #checks we are not displaying items from a different invoice
           expect(page).to_not have_content(studded_bracelet.name)
-          #checks we are not displaying items on this invoice from another merchant
           expect(page).to_not have_content(licorice.name)
         end
       end
@@ -61,9 +59,9 @@ RSpec.describe 'Merchant Index Show Page' do
       it 'displays the quantity, sale price, and status for each item' do
         visit merchant_invoice_path(jewlery_city, invoice_1)
         within("#item_#{gold_earrings.id}") do
-          expect(page).to have_content("#{invoice_item_2.quantity}")
-          expect(page).to have_content("#{((invoice_item_2.unit_price)/100.to_f).round(2)}")
-          expect(page).to have_field("Status", with: invoice_item_2.status)
+          expect(page).to have_content("#{invoice_item_1.quantity}")
+          expect(page).to have_content("#{((invoice_item_1.unit_price)/100.to_f).round(2)}")
+          expect(page).to have_field("Status", with: invoice_item_1.status)
         end
 
         within("#item_#{silver_necklace.id}") do
@@ -109,19 +107,16 @@ RSpec.describe 'Merchant Index Show Page' do
       end
 
       it 'shows a link to the bulk discount show page for the discount that was applied, if any' do
-        discount_1 = jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 5)
-        discount_2 = jewlery_city.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 6)
+        discount_1 = jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
+        discount_2 = jewlery_city.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 35)
         visit merchant_invoice_path(jewlery_city, invoice_1)
-        # within("#item_#{gold_earrings.id}") do
+        within("#item_#{gold_earrings.id}") do
+          expect(page).to_not have_link ("Applied #{discount_1.discount_percent}% Discount")
+        end
 
-        # end
-        # within("#item_#{gold_earrings.id}") do
-          
-        # end
-        # within("#item_#{gold_earrings.id}") do
-          
-        # end
-
+        within("#item_#{things.id}") do
+          expect(page).to have_link ("Applied #{discount_1.discount_percent}% Discount")
+        end
       end
     end
   end

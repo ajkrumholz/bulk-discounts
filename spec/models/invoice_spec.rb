@@ -21,8 +21,8 @@ RSpec.describe Invoice, type: :model do
       let!(:polina_invoice2) { polina.invoices.create!(status: "cancelled")}
       let!(:leah_invoice1) { leah.invoices.create!(status: "cancelled")}
       let!(:leah_invoice2) { leah.invoices.create!(status: "in_progress")}
-     it 'can return the invoices that have a status of in progress' do 
 
+     it 'can return the invoices that have a status of in progress' do 
       expect(Invoice.incomplete_invoices).to eq([alaina_invoice2, leah_invoice2])
      end
     end
@@ -61,6 +61,15 @@ RSpec.describe Invoice, type: :model do
       expect(jewlery_city.find_relevant_invoices).to include(alaina_invoice1, alaina_invoice2, alaina_invoice3, whitney_invoice1, whitney_invoice2, whitney_invoice3)
       expect(jewlery_city.find_relevant_invoices).to_not include(alaina_invoice4)
      end
+    end
+
+    describe '#customer_name' do
+      let!(:alaina) { Customer.create!(first_name: "Alaina", last_name: "Kneiling")}
+
+      let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
+      it 'returns the full name of an invoice customer' do
+        expect(alaina_invoice1.customer_name).to eq("Alaina Kneiling")
+      end
     end
 
     describe '#merchant_items' do
