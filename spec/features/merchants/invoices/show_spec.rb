@@ -110,7 +110,7 @@ RSpec.describe 'Merchant Index Show Page' do
         discount_2 = jewlery_city.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 35)
 
         visit merchant_invoice_path(jewlery_city, invoice_1)
-        
+
         within("#item_#{gold_earrings.id}") do
           expect(page).to_not have_link ("Applied #{discount_1.discount_percent}% Discount")
         end
@@ -118,6 +118,12 @@ RSpec.describe 'Merchant Index Show Page' do
         within("#item_#{things.id}") do
           expect(page).to have_link ("Applied #{discount_1.discount_percent}% Discount")
         end
+
+        click_link "Applied #{discount_1.discount_percent}% Discount"
+
+        expect(current_path).to eq(merchant_bulk_discount_path(jewlery_city, discount_1))
+        expect(page).to have_content(discount_1.discount_percent)
+        expect(page).to have_content(discount_1.quantity_threshold)
       end
     end
   end
