@@ -116,8 +116,8 @@ RSpec.describe Invoice, type: :model do
       
       describe '#calculate_invoice_revenue(merchant)' do
         it 'takes a merchant as an arg and returns the total amount of revenue that invoice generated for that merchant' do
-        expect(alaina_invoice1.calculate_invoice_revenue(jewlery_city)).to eq(39000)
-        expect(alaina_invoice1.calculate_invoice_revenue(carly_silo)).to eq(19500)
+        expect(alaina_invoice1.calculate_invoice_revenue(jewlery_city)).to eq(58500)
+        expect(alaina_invoice1.calculate_invoice_revenue(carly_silo)).to eq(39000)
         end
       end
 
@@ -127,13 +127,26 @@ RSpec.describe Invoice, type: :model do
           jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 22)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 16)
 
-          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(19500)
-          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(39000)
+          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(58500)
+          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(39000)
         end
 
-        it 'takes a merchant as an arg and returns the invoice revenue after any bulk discounts have been applied' do
-          # expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(6000)
-          # expect(alaina_invoice1.calculate_discounted_revenue(carly)).to eq(6000)
+        it 'calculates disc. revenue when a single discount applies' do
+          jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 15)
+          carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
+
+          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(49400)
+          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(35100)
+        end
+
+        it 'calculates disc. revenue when a single discount applies but multiple discounts are present' do
+          jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 15)
+          jewlery_city.bulk_discounts.create!(discount_percent: 30, quantity_threshold: 23)
+          carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
+          carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 16)
+
+          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(49400)
+          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(35100)
         end
       end
 
