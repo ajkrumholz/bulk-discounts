@@ -5,13 +5,19 @@
 <h2>Invoice #<%= @invoice.id %></h2>
 
 <p>Status: <%= @invoice.status %></p>
+
 <p>Created at: <%= @invoice.created_at.strftime("%A, %B %d, %Y") %></p>
+
 <div id="total_invoice_revenue">
-<p>Total Revenue From This Invoice: <%= price_round(@invoice.calculate_merchant_invoice_revenue(@merchant))%></p>
+  <p>Total Revenue From This Invoice: <%= price_round(@invoice.merchant_invoice_revenue(@merchant))%></p>
 </div>
-<p>Total Revenue After Bulk Discount: <%= price_round(@invoice.calculate_merchant_discounted_revenue(@merchant)) %></p>
+
+<div id="total_discount_revenue">
+  <p>Total Revenue After Bulk Discount: <%= price_round(@invoice.merchant_discount_revenue(@merchant)) %></p>
+</div>
+
 <h3>Customer:</h3>
-<p style='margin-left:20px'><%= @invoice.customer.name %></p>
+<p style='margin-left:20px'><%= @invoice.customer_name %></p>
 
 <h3>Items on this Invoice </h3>
 <table id="invoice_items">
@@ -19,17 +25,23 @@
     <th>Item Name</th>
     <th>Quantity</th>
     <th>Unit Price</th>
+    <th>Applied Discount</th>
     <th>Status</th>
   </tr>
-  <% @invoice.merchant_items(@merchant).each do |item| %>
-    <tr  id="item_<%= item.id %>">
-    <td><%= item.name %></td>
-      <td><%= item.invoice_item(@invoice).quantity %></td>
-      <td><%= price_round(item.invoice_item(@invoice).unit_price) %></td>
+  <% @invoice.merchant_invoice_items(@merchant).each do |invoice_item| %>
+    <tr  id="item_<%= invoice_item.item_id %>">
+      <td><%= invoice_item.item_name %></td>
+      <td><%= invoice_item.quantity %></td>
+      <td><%= price_round(invoice_item.unit_price) %></td>
+      <% if invoice_item.applied_discount.present? %>
+      <td><%= link_to "Applied #{invoice_item.applied_discount_pct}% Discount", merchant_bulk_discount_path(@merchant, invoice_item.applied_discount) %></td>
       <td>
-        <%= form_with url: merchant_invoice_item_path(@merchant, item.invoice_item(@invoice)), method: :patch do |f| %>
+      <% else %>
+      <p></p>
+      <% end %>
+        <%= form_with url: merchant_invoice_item_path(@merchant, invoice_item), method: :patch do |f| %>
           <%= f.label :status, "Status" %>
-          <%= f.select :status, options_for_select([:pending, :packaged, :shipped], selected: item.invoice_item(@invoice).status) %>
+          <%= f.select :status, options_for_select([:pending, :packaged, :shipped], selected: invoice_item.status) %>
           <%= f.hidden_field :invoice_id, value: @invoice.id %>
           <%= f.submit "Update Item Status"  %>
       </td>

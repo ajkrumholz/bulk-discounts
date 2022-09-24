@@ -10,32 +10,52 @@ class Invoice < ApplicationRecord
     where("status = 2").order(:created_at)
   end
 
+  def customer_name
+    customer.name
+  end
+  
   def merchant_items(merchant)
     self.items.where(items: { merchant_id: merchant.id } ).distinct
   end
 
-  def calculate_invoice_revenue
-    Invoice.joins(:items).where(id: self.id).sum('quantity*invoice_items.unit_price')
+  def merchant_invoice_items(merchant)
+    invoice_items.where( invoice_items: { item_id: merchant.items.ids})
   end
 
-  def calculate_merchant_invoice_revenue(merchant)
-    Invoice.joins(:items).where(id: self.id, items: { merchant_id: merchant.id }).sum('quantity*invoice_items.unit_price')
+  def invoice_revenue
+    invoice_items.sum('quantity*invoice_items.unit_price')
   end
 
-  def item_discount(merchant)
-    Invoice.joins(items: [merchant: :bulk_discounts]).where(id: self.id, items: { merchant_id: merchant.id}).select('items.id as item_id, bulk_discounts.id, invoice_items.unit_price, quantity, quantity_threshold, discount_percent')
+  def merchant_invoice_revenue(merchant)
+    invoice_items.where(item_id: merchant.items.ids)
+    .sum('quantity*unit_price')
   end
-
-  def calculate_merchant_discounted_revenue(merchant)
-    discounted = item_discount(merchant).where.not('quantity < quantity_threshold')
-    discounted_items = discounted.map { |item| item.item_id }
-    discounted_revenues_ary = discounted.select('(quantity*invoice_items.unit_price)*(100-discount_percent)/100 as revenue').map { |item| [item.item_id, item.revenue] }
-    hash = Hash.new { |h,k| h[k] = [] }
-    discounted_revenues_ary.each do |element|
-      hash[element[0]] << element[1]
+  
+  def merchant_discount_revenue(merchant)
+    merchant_invoice_items(merchant).sum do |invoice_item|
+      invoice_item.invoice_item_revenue
     end
-    biggest_discounts = hash.values.map { |array| array.min }
-    full_price_revenue = item_discount(merchant).where('quantity < quantity_threshold').where.not(items: { id: discounted_items} ).select("items_id").distinct.sum('quantity*invoice_items.unit_price')
-    biggest_discounts.sum + full_price_revenue
   end
 end
+  # def item_discount(merchant)
+  #   Invoice.joins(items: [merchant: :bulk_discounts]).where(id: self.id, items: { merchant_id: merchant.id}).select('items.id as item_id, bulk_discounts.id, invoice_items.unit_price, quantity, quantity_threshold, discount_percent')
+  # end
+
+  # def merchant_discount_revenue(merchant)
+  #   require 'pry'; binding.pry
+  #   discounted = item_discount(merchant).where.not('quantity < quantity_threshold')
+  #   discounted_items = discounted.map { |item| item.item_id }
+  #   discounted_revenues_ary = discounted.select('(quantity*invoice_items.unit_price)*(100-discount_percent)/100 as revenue').map { |item| [item.item_id, item.revenue] }
+  #   hash = Hash.new { |h,k| h[k] = [] }
+  #   discounted_revenues_ary.each do |element|
+  #     hash[element[0]] << element[1]
+  #   end
+  #   biggest_discounts = hash.values.map { |array| array.min }
+  #   full_price_revenue = item_discount(merchant).where('quantity < quantity_threshold').where.not(items: { id: discounted_items} ).select("items_id").distinct.sum('quantity*invoice_items.unit_price')
+  #   biggest_discounts.sum + full_price_revenue
+  # end
+
+
+  # def merchant_discount_revenue(merchant)
+  #   merchant_invoice_revenue(merchant) - merchant_discount(merchant)
+  # end

@@ -21,8 +21,8 @@ RSpec.describe Invoice, type: :model do
       let!(:polina_invoice2) { polina.invoices.create!(status: "cancelled")}
       let!(:leah_invoice1) { leah.invoices.create!(status: "cancelled")}
       let!(:leah_invoice2) { leah.invoices.create!(status: "in_progress")}
-     it 'can return the invoices that have a status of in progress' do 
 
+     it 'can return the invoices that have a status of in progress' do 
       expect(Invoice.incomplete_invoices).to eq([alaina_invoice2, leah_invoice2])
      end
     end
@@ -63,6 +63,15 @@ RSpec.describe Invoice, type: :model do
      end
     end
 
+    describe '#customer_name' do
+      let!(:alaina) { Customer.create!(first_name: "Alaina", last_name: "Kneiling")}
+
+      let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
+      it 'returns the full name of an invoice customer' do
+        expect(alaina_invoice1.customer_name).to eq("Alaina Kneiling")
+      end
+    end
+
     describe '#merchant_items' do
       let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
       let!(:carly_silo) { Merchant.create!(name: "Carly Simon's Candy Silo")}
@@ -75,12 +84,12 @@ RSpec.describe Invoice, type: :model do
 
       let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
 
-      let!(:alainainvoice1_itemgold_earrings) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-      let!(:alainainvoice1_itemsilver_necklace) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: silver_necklace.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-      let!(:alainainvoice1_itemglicorice) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: licorice.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+      let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+      let!(:invoice_item_2) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: silver_necklace.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+      let!(:invoice_item_3) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: licorice.id, quantity: 4, unit_price: 1300, status:"packaged" )}
 
 
-      it 'takes a merchant as an arg and returns an array of items from that merchant which appear on the invoice' do
+      it 'takes a merchant as an arg and returns an array of invoice items from that merchant which appear on the invoice' do
         expect(alaina_invoice1.merchant_items(jewlery_city)).to include(gold_earrings, silver_necklace)
         expect(alaina_invoice1.merchant_items(jewlery_city)).to_not include(licorice)
       end
@@ -113,36 +122,35 @@ RSpec.describe Invoice, type: :model do
       let!(:invoice_item_5) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: garden.id, quantity: 10, unit_price: 1300, status:"packaged" )}
       let!(:invoice_item_6) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: flowers.id, quantity: 15, unit_price: 1300, status:"packaged" )}
 
-      describe '#calculate_invoice_revenue' do
+      describe '#invoice_revenue' do
         it 'calculates total revenue of an invoice across all merchants' do
-          expect(alaina_invoice1.calculate_invoice_revenue).to eq(97500)
+          expect(alaina_invoice1.invoice_revenue).to eq(97500)
         end
       end
-
       
-      describe '#calculate_merchant_invoice_revenue(merchant)' do
+      describe '#merchant_invoice_revenue(merchant)' do
         it 'takes a merchant as an arg and returns the total amount of revenue that invoice generated for that merchant' do
-        expect(alaina_invoice1.calculate_merchant_invoice_revenue(jewlery_city)).to eq(58500)
-        expect(alaina_invoice1.calculate_merchant_invoice_revenue(carly_silo)).to eq(39000)
+        expect(alaina_invoice1.merchant_invoice_revenue(jewlery_city)).to eq(58500)
+        expect(alaina_invoice1.merchant_invoice_revenue(carly_silo)).to eq(39000)
         end
       end
 
-      describe '#calculate_merchant_discounted_revenue(merchant)' do
+      describe '#merchant_discount_revenueed_revenue(merchant)' do
 
         it 'calculates disc. revenue when no discounts apply' do
           jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 22)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 16)
 
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(58500)
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(39000)
+          expect(alaina_invoice1.merchant_discount_revenue(jewlery_city)).to eq(58500)
+          expect(alaina_invoice1.merchant_discount_revenue(carly_silo)).to eq(39000)
         end
 
         it 'calculates disc. revenue when a single discount applies' do
           jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 15)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
 
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(49400)
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(35100)
+          expect(alaina_invoice1.merchant_discount_revenue(jewlery_city)).to eq(49400)
+          expect(alaina_invoice1.merchant_discount_revenue(carly_silo)).to eq(35100)
         end
 
         it 'calculates disc. revenue when a single discount applies but multiple discounts are present' do
@@ -151,8 +159,8 @@ RSpec.describe Invoice, type: :model do
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 16)
 
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(49400)
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(35100)
+          expect(alaina_invoice1.merchant_discount_revenue(jewlery_city)).to eq(49400)
+          expect(alaina_invoice1.merchant_discount_revenue(carly_silo)).to eq(35100)
         end
 
         it 'calculates disc revenue when multiple discounts apply' do
@@ -161,8 +169,8 @@ RSpec.describe Invoice, type: :model do
           carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
           carly_silo.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 14)
 
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(jewlery_city)).to eq(46800)
-          expect(alaina_invoice1.calculate_merchant_discounted_revenue(carly_silo)).to eq(34125)
+          expect(alaina_invoice1.merchant_discount_revenue(jewlery_city)).to eq(46800)
+          expect(alaina_invoice1.merchant_discount_revenue(carly_silo)).to eq(34125)
         end
       end
     end
