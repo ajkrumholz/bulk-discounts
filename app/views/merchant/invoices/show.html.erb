@@ -9,10 +9,11 @@
 <div id="total_invoice_revenue">
 <p>Total Revenue From This Invoice: <%= price_round(@invoice.calculate_invoice_revenue)%></p>
 </div>
+<p>Total Revenue After Bulk Discount: <%= price_round(@invoice.calculate_discounted_revenue) %></p>
 <h3>Customer:</h3>
 <p style='margin-left:20px'><%= @invoice.customer.name %></p>
 
-<h3>Itemson this Invoice </h3>
+<h3>Items on this Invoice </h3>
 <table id="invoice_items">
   <tr>
     <th>Item Name</th>

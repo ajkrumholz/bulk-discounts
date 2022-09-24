@@ -14,7 +14,12 @@ class Invoice < ApplicationRecord
     self.items.where(items: { merchant_id: merchant.id } ).distinct
   end
 
-  def calculate_invoice_revenue
-    self.invoice_items.sum("quantity*unit_price")
+  def calculate_invoice_revenue(merchant)
+    Invoice.joins(:items).where(id: self.id, items: { merchant_id: merchant.id }).sum('quantity*invoice_items.unit_price')
+  end
+
+  def calculate_discounted_revenue(merchant)
+    require 'pry'; binding.pry
+    Invoice.joins(items: [merchant: :bulk_discounts])
   end
 end

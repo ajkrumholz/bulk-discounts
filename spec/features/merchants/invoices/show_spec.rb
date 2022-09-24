@@ -102,6 +102,11 @@ RSpec.describe 'Merchant Index Show Page' do
         end
       end
 
+      it 'also shows the total revenue after bulk discounts are applied' do
+        visit merchant_invoice_path(jewlery_city, alaina_invoice1)
+
+        expect(page).to have_content("Total Revenue After Bulk Discount: $#{sprintf("%.2f",alaina_invoice1.calculate_discounted_revenue/100.to_f)}")
+      end
     end
   end
 end
