@@ -23,11 +23,16 @@ class Invoice < ApplicationRecord
   end
 
   def merchant_invoice_revenue(merchant)
-    invoice_items
-      .where(item_id: merchant.items.ids)
-      .sum('quantity*unit_price')
+    invoice_items.where(item_id: merchant.items.ids)
+    .sum('quantity*unit_price')
   end
-
+  
+  def merchant_discount_revenue(merchant)
+    merchant_invoice_items(merchant).sum do |invoice_item|
+      invoice_item.invoice_item_revenue
+    end
+  end
+end
   # def item_discount(merchant)
   #   Invoice.joins(items: [merchant: :bulk_discounts]).where(id: self.id, items: { merchant_id: merchant.id}).select('items.id as item_id, bulk_discounts.id, invoice_items.unit_price, quantity, quantity_threshold, discount_percent')
   # end
@@ -46,15 +51,7 @@ class Invoice < ApplicationRecord
   #   biggest_discounts.sum + full_price_revenue
   # end
 
-  # def merchant_discount(merchant)
-  #   require 'pry'; binding.pry
-  #   self.joins(items: [merchant: :bulk_discounts])
-  #     .where(items: { merchant_id: merchant.id})
-  # end
 
   # def merchant_discounted_revenue(merchant)
   #   merchant_invoice_revenue(merchant) - merchant_discount(merchant)
   # end
-
-
-end
