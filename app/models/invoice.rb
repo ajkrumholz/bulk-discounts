@@ -25,8 +25,13 @@ class Invoice < ApplicationRecord
   def calculate_discounted_revenue(merchant)
     discounted = item_discount(merchant).where.not('quantity < quantity_threshold')
     discounted_items = discounted.map { |item| item.item_id }
-    discounted_revenue = discounted.sum('(quantity*invoice_items.unit_price)*(100-discount_percent)/100')
+    discounted_revenues_ary = discounted.select('(quantity*invoice_items.unit_price)*(100-discount_percent)/100 as revenue').map { |item| [item.item_id, item.revenue] }
+    hash = Hash.new { |h,k| h[k] = [] }
+    discounted_revenues_ary.each do |element|
+      hash[element[0]] << element[1]
+    end
+    biggest_discounts = hash.values.map { |array| array.min }
     full_price_revenue = item_discount(merchant).where('quantity < quantity_threshold').where.not(items: { id: discounted_items} ).select("items_id").distinct.sum('quantity*invoice_items.unit_price')
-    discounted_revenue + full_price_revenue
+    biggest_discounts.sum + full_price_revenue
   end
 end

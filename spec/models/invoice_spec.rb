@@ -148,10 +148,17 @@ RSpec.describe Invoice, type: :model do
           expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(49400)
           expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(35100)
         end
+
+        it 'calculates disc revenue when multiple discounts apply' do
+          jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 15)
+          jewlery_city.bulk_discounts.create!(discount_percent: 30, quantity_threshold: 18)
+          carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 11)
+          carly_silo.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 14)
+
+          expect(alaina_invoice1.calculate_discounted_revenue(jewlery_city)).to eq(46800)
+          expect(alaina_invoice1.calculate_discounted_revenue(carly_silo)).to eq(34125)
+        end
       end
-
     end
-
   end
-
 end
