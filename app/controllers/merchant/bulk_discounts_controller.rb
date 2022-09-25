@@ -30,7 +30,7 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
   def destroy
     if @discount.invoices_in_progress?
       flash.notice = "Unable to delete a bulk discount applied to a pending invoice"
-      redirect_to merchant_bulk_discount_path(@merchant)
+      redirect_to merchant_bulk_discounts_path(@merchant)
     else
       @discount.destroy
       flash.notice = "Discount deleted"

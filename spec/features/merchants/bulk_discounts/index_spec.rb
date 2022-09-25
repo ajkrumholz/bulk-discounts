@@ -115,7 +115,7 @@ RSpec.describe 'merchant bulk items index' do
         it 'will not delete a bulk discount applied to an invoice with status pending' do
           alaina = Customer.create!(first_name: "Alaina", last_name: "Kneiling")
           licorice = merchant_1.items.create!(name: "Licorice Funnels", description: "Licorice Balls", unit_price: 1200)
-          invoice = alaina.invoices.create!(status: "pending", created_at: "2012-01-30 14:54:09")
+          invoice = alaina.invoices.create!(status: :in_progress, created_at: "2012-01-30 14:54:09")
           invoice_item = InvoiceItem.create!(invoice_id: invoice.id, item_id: licorice.id, quantity: 5, unit_price: 2700, status:"shipped" )
 
           visit merchant_bulk_discounts_path(merchant_1)
@@ -124,8 +124,7 @@ RSpec.describe 'merchant bulk items index' do
 
           expect(current_path).to eq(merchant_bulk_discounts_path(merchant_1))
 
-          expect(page).to have_content("#{discount_2.discount_percent}% Discount")
-          expect(page).to have_content("On orders of #{discount_2.quantity_threshold} or more items")
+          expect(page).to have_content("#{discount_2.discount_percent}% off #{discount_2.quantity_threshold} or more items")
 
           expect(page).to have_content("Unable to delete a bulk discount applied to a pending invoice")
         end
