@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'webmock'
 
 RSpec.describe 'merchant bulk items index' do
   let!(:merchant_1) { Merchant.create!(name: Faker::Name.unique.name) }
@@ -109,6 +110,12 @@ RSpec.describe 'merchant bulk items index' do
           expect(page).to_not have_css("#discount-#{disc_15m1.id}")
         end
       end
+    end
+  end
+
+  describe 'upcoming holidays section' do
+    it 'displays a list of the next three upcoming US holidays' do
+      expect(page).to have_css("#upcoming_holidays")
     end
   end
 end

@@ -1,7 +1,11 @@
+require './app/facades/holiday_facade'
+
 class Merchant::BulkDiscountsController < Merchant::BaseController
   before_action :set_discount, only: [:show, :destroy, :edit, :update]
+
   def index
     @discounts = @merchant.bulk_discounts
+    @next_three_holidays = HolidayFacade.next_three_holidays
   end
 
   def show
