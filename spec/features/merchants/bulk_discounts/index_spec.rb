@@ -116,7 +116,6 @@ RSpec.describe 'merchant bulk items index' do
   describe 'upcoming holidays section' do
     it 'displays a list of the next three upcoming US holidays' do
       expect(page).to have_css("#upcoming_holidays")
-      save_and_open_page
     end
   end
 end
