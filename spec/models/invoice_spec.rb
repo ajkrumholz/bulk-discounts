@@ -72,28 +72,28 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe '#merchant_items' do
-      let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
-      let!(:carly_silo) { Merchant.create!(name: "Carly Simon's Candy Silo")}
+    # describe '#merchant_items' do
+    #   let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
+    #   let!(:carly_silo) { Merchant.create!(name: "Carly Simon's Candy Silo")}
 
-      let!(:gold_earrings) { jewlery_city.items.create!(name: "Gold Earrings", description: "14k Gold 12' Hoops", unit_price: 12000) }
-      let!(:silver_necklace) { jewlery_city.items.create!(name: "Silver Necklace", description: "An everyday wearable silver necklace", unit_price: 220000) }
-      let!(:licorice) { carly_silo.items.create!(name: "Licorice Funnels", description: "Licorice Balls", unit_price: 1200, enabled: true) }
+    #   let!(:gold_earrings) { jewlery_city.items.create!(name: "Gold Earrings", description: "14k Gold 12' Hoops", unit_price: 12000) }
+    #   let!(:silver_necklace) { jewlery_city.items.create!(name: "Silver Necklace", description: "An everyday wearable silver necklace", unit_price: 220000) }
+    #   let!(:licorice) { carly_silo.items.create!(name: "Licorice Funnels", description: "Licorice Balls", unit_price: 1200, enabled: true) }
 
-      let!(:alaina) { Customer.create!(first_name: "Alaina", last_name: "Kneiling")}
+    #   let!(:alaina) { Customer.create!(first_name: "Alaina", last_name: "Kneiling")}
 
-      let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
+    #   let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
 
-      let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-      let!(:invoice_item_2) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: silver_necklace.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-      let!(:invoice_item_3) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: licorice.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+    #   let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+    #   let!(:invoice_item_2) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: silver_necklace.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+    #   let!(:invoice_item_3) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: licorice.id, quantity: 4, unit_price: 1300, status:"packaged" )}
 
 
-      it 'takes a merchant as an arg and returns an array of invoice items from that merchant which appear on the invoice' do
-        expect(alaina_invoice1.merchant_items(jewlery_city)).to include(gold_earrings, silver_necklace)
-        expect(alaina_invoice1.merchant_items(jewlery_city)).to_not include(licorice)
-      end
-    end
+    #   it 'takes a merchant as an arg and returns an array of invoice items from that merchant which appear on the invoice' do
+    #     expect(alaina_invoice1.merchant_items(jewlery_city)).to include(gold_earrings, silver_necklace)
+    #     expect(alaina_invoice1.merchant_items(jewlery_city)).to_not include(licorice)
+    #   end
+    # end
 
 
     describe 'revenue calculations' do
@@ -125,6 +125,16 @@ RSpec.describe Invoice, type: :model do
       describe '#invoice_revenue' do
         it 'calculates total revenue of an invoice across all merchants' do
           expect(alaina_invoice1.invoice_revenue).to eq(97500)
+        end
+      end
+
+      describe '#invoice_discount_revenue' do
+        it 'returns the total discounted revenue across all merchants' do
+          discount_1 = jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 10)
+          discount_2 = jewlery_city.bulk_discounts.create!(discount_percent: 25, quantity_threshold: 15)
+          discount_3 = carly_silo.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 10)
+
+          expect(alaina_invoice1.invoice_discount_revenue).to eq(77025)
         end
       end
       

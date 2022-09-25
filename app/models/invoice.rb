@@ -14,9 +14,9 @@ class Invoice < ApplicationRecord
     customer.name
   end
   
-  def merchant_items(merchant)
-    self.items.where(items: { merchant_id: merchant.id } ).distinct
-  end
+  # def merchant_items(merchant)
+  #   self.items.where(items: { merchant_id: merchant.id } ).distinct
+  # end
 
   def merchant_invoice_items(merchant)
     invoice_items.where( invoice_items: { item_id: merchant.items.ids})
@@ -24,6 +24,12 @@ class Invoice < ApplicationRecord
 
   def invoice_revenue
     invoice_items.sum('quantity*invoice_items.unit_price')
+  end
+
+  def invoice_discount_revenue
+    invoice_items.sum do |invoice_item|
+      invoice_item.invoice_item_revenue
+    end
   end
 
   def merchant_invoice_revenue(merchant)
