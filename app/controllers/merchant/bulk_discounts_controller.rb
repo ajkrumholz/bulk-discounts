@@ -46,10 +46,6 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
   end
 
   def update
-    # if @discount.invoices_in_progress?
-    #   flash.notice("This discount is cannot be edited while active on an in-progress invoice!")
-    #   redirect_to merchant_bulk_discount_path(@merchant, @discount)
-    # else
     @discount.update(bulk_discount_params)
     if @discount.save
       flash.notice = "Discount updated"
