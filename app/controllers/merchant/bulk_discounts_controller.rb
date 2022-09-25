@@ -39,9 +39,13 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
 
   def update
     @discount.update(bulk_discount_params)
-    @discount.save
-    flash.notice = "Discount updated"
-    redirect_to merchant_bulk_discount_path(@merchant, @discount)
+    if @discount.save
+      flash.notice = "Discount updated"
+      redirect_to merchant_bulk_discount_path(@merchant, @discount)
+    else
+      flash.notice = @discount.errors.full_messages.to_sentence
+      redirect_to edit_merchant_bulk_discount_path(@merchant, @discount)
+    end
   end
 
   private
