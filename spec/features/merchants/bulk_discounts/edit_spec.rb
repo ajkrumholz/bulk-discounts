@@ -26,6 +26,18 @@ let!(:merchant_1) { Merchant.create!(name: Faker::Name.unique.name) }
     expect(page).to have_field(:bulk_discount_quantity_threshold, with: discount_1.quantity_threshold)
   end
 
+  describe 'when I try to submit invalid data' do
+    it 'gives a helpful error message and reloads the page' do
+      fill_in(:bulk_discount_discount_percent, with: "")
+      fill_in(:bulk_discount_quantity_threshold, with: "abcdef")
+
+      click_on "Update Discount"
+
+      expect(page).to have_current_path(edit_merchant_bulk_discount_path(merchant_1, discount_1))
+      expect(page).to have_content("Discount percent can't be blank, Discount percent is not a number, and Quantity threshold is not a number")
+    end
+  end
+
   describe 'when I changed a value in the form and click submit' do
     let(:new_percent) { Faker::Number.number(digits: 2) }
     let(:new_quantity) { Faker::Number.number(digits: 2) }
