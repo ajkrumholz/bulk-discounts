@@ -27,6 +27,18 @@ RSpec.describe 'new merchant bulk discount page' do
       expect(page).to have_button("Add new discount")
     end
 
+    describe 'when I submit the form without a field' do
+      let!(:disc_percent) { Faker::Number.number(digits: 2)}
+
+      it 'supplies a helpful error message' do
+        fill_in :bulk_discount_discount_percent, with: disc_percent
+        click_on "Add new discount"
+
+        expect(page).to have_current_path(new_merchant_bulk_discount_path(merchant_1))
+        expect(page).to have_content("Quantity threshold can't be blank and Quantity threshold is not a number")
+      end
+    end
+
     describe 'when I fill out the form with valid data and click submit' do
       let!(:new_disc_percent) { Faker::Number.number(digits: 2)}
       let!(:new_qty_threshold) { Faker::Number.number(digits: 2)}
