@@ -100,11 +100,17 @@ RSpec.describe Invoice, type: :model do
         
         invoice.set_invoice_item_discount
 
-        invoice.items.each do |item|
-          current = InvoiceItem.find_by(invoice_id: invoice.id, item_id: item.id)
-          discount = current.applied_discount_pct
-          expect(current.discount).to eq(discount)
-        end
+        invoice_item_1.reload
+        invoice_item_2.reload
+        invoice_item_3.reload
+        invoice_item_4.reload
+        invoice_item_5.reload
+
+        expect(invoice_item_1.discount).to eq(0)
+        expect(invoice_item_2.discount).to eq(bulk_discount_1.discount_percent)
+        expect(invoice_item_3.discount).to eq(bulk_discount_2.discount_percent)
+        expect(invoice_item_4.discount).to eq(0)
+        expect(invoice_item_5.discount).to eq(bulk_discount_3.discount_percent)
       end
     end
 
