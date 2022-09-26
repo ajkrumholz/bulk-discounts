@@ -22,7 +22,11 @@ class InvoiceItem < ApplicationRecord
   end
 
   def applied_discount_pct
-    applied_discount.discount_percent
+    if applied_discount != nil
+      applied_discount.discount_percent
+    else
+      0
+    end
   end
 
   def item_name

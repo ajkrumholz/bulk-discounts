@@ -13,10 +13,6 @@ class Invoice < ApplicationRecord
   def customer_name
     customer.name
   end
-  
-  # def merchant_items(merchant)
-  #   self.items.where(items: { merchant_id: merchant.id } ).distinct
-  # end
 
   def merchant_invoice_items(merchant)
     invoice_items.where( invoice_items: { item_id: merchant.items.ids})
@@ -40,6 +36,14 @@ class Invoice < ApplicationRecord
   def merchant_discount_revenue(merchant)
     merchant_invoice_items(merchant).sum do |invoice_item|
       invoice_item.invoice_item_revenue
+    end
+  end
+
+  def set_invoice_item_discount
+    items.each do |item|
+      invoice_item = InvoiceItem.find_by(invoice_id: self.id, item_id: item.id)
+      discount = invoice_item.applied_discount_pct
+      invoice_item.update(discount: discount)
     end
   end
 end
