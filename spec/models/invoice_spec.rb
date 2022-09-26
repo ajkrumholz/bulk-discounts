@@ -1,4 +1,5 @@
 require 'rails_helper'
+
 RSpec.describe Invoice, type: :model do
   describe 'relationships' do
     it { should belong_to(:customer) }
@@ -72,29 +73,46 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    # describe '#merchant_items' do
-    #   let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
-    #   let!(:carly_silo) { Merchant.create!(name: "Carly Simon's Candy Silo")}
+    describe '#set_invoice_item_discount' do
+      it 'adds the percent discount applied to each invoice_item' do
+        merchant_1 = Merchant.create!(name: Faker::Name.unique.name)
+        merchant_2 = Merchant.create!(name: Faker::Name.unique.name)
 
-    #   let!(:gold_earrings) { jewlery_city.items.create!(name: "Gold Earrings", description: "14k Gold 12' Hoops", unit_price: 12000) }
-    #   let!(:silver_necklace) { jewlery_city.items.create!(name: "Silver Necklace", description: "An everyday wearable silver necklace", unit_price: 220000) }
-    #   let!(:licorice) { carly_silo.items.create!(name: "Licorice Funnels", description: "Licorice Balls", unit_price: 1200, enabled: true) }
+        item_1 = merchant_1.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+        item_2 = merchant_1.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+        item_3 = merchant_1.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+        item_4 = merchant_2.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+        item_5 = merchant_2.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
 
-    #   let!(:alaina) { Customer.create!(first_name: "Alaina", last_name: "Kneiling")}
+        customer = Customer.create!(first_name: Faker::Name.first_name, last_name: Faker::Name.last_name)
 
-    #   let!(:alaina_invoice1) { alaina.invoices.create!(status: "completed")}
+        invoice = customer.invoices.create!(status: :in_progress)
 
-    #   let!(:invoice_item_1) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: gold_earrings.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-    #   let!(:invoice_item_2) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: silver_necklace.id, quantity: 4, unit_price: 1300, status:"packaged" )}
-    #   let!(:invoice_item_3) { InvoiceItem.create!(invoice_id: alaina_invoice1.id, item_id: licorice.id, quantity: 4, unit_price: 1300, status:"packaged" )}
+        invoice_item_1 = InvoiceItem.create!(item_id: item_1.id, invoice_id: invoice.id, quantity: 5, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #no discount
+        invoice_item_2 = InvoiceItem.create!(item_id: item_2.id, invoice_id: invoice.id, quantity: 10, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #discount 1
+        invoice_item_3 = InvoiceItem.create!(item_id: item_3.id, invoice_id: invoice.id, quantity: 15, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #discount 2
+        invoice_item_4 = InvoiceItem.create!(item_id: item_4.id, invoice_id: invoice.id, quantity: 5, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #no discount
+        invoice_item_5 = InvoiceItem.create!(item_id: item_5.id, invoice_id: invoice.id, quantity: 10, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #discount 3
 
+        bulk_discount_1 = merchant_1.bulk_discounts.create(discount_percent: 15, quantity_threshold: 10)
+        bulk_discount_2 = merchant_1.bulk_discounts.create(discount_percent: 20, quantity_threshold: 15)
+        bulk_discount_3 = merchant_2.bulk_discounts.create(discount_percent: 25, quantity_threshold: 10)
+        
+        invoice.set_invoice_item_discount
 
-    #   it 'takes a merchant as an arg and returns an array of invoice items from that merchant which appear on the invoice' do
-    #     expect(alaina_invoice1.merchant_items(jewlery_city)).to include(gold_earrings, silver_necklace)
-    #     expect(alaina_invoice1.merchant_items(jewlery_city)).to_not include(licorice)
-    #   end
-    # end
+        invoice_item_1.reload
+        invoice_item_2.reload
+        invoice_item_3.reload
+        invoice_item_4.reload
+        invoice_item_5.reload
 
+        expect(invoice_item_1.discount).to eq(0)
+        expect(invoice_item_2.discount).to eq(bulk_discount_1.discount_percent)
+        expect(invoice_item_3.discount).to eq(bulk_discount_2.discount_percent)
+        expect(invoice_item_4.discount).to eq(0)
+        expect(invoice_item_5.discount).to eq(bulk_discount_3.discount_percent)
+      end
+    end
 
     describe 'revenue calculations' do
       let!(:jewlery_city) { Merchant.create!(name: "Jewlery City Merchant")}
