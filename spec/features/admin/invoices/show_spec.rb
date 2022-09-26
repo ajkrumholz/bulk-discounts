@@ -86,4 +86,43 @@ RSpec.describe 'admin invoice show' do
             expect(alaina_invoice1.status).to eq('in_progress')
         end
     end
+
+    describe 'when an admin updates an invoice status to completed' do
+        it 'any discount percent applied is recorded to the relevant invoice_item' do
+            merchant_1 = Merchant.create!(name: Faker::Name.unique.name)
+
+            item_1 = merchant_1.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+            item_2 = merchant_1.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+            item_3 = merchant_1.items.create!(name: Faker::Appliance.equipment, description: Faker::Lorem.sentence(word_count: 3), unit_price: Faker::Number.between(from: 500, to: 1500))
+
+            customer = Customer.create!(first_name: Faker::Name.first_name, last_name: Faker::Name.last_name)
+
+            invoice = customer.invoices.create!(status: :in_progress)
+
+            invoice_item_1 = InvoiceItem.create!(item_id: item_1.id, invoice_id: invoice.id, quantity: 5, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #no discount
+            invoice_item_2 = InvoiceItem.create!(item_id: item_2.id, invoice_id: invoice.id, quantity: 10, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #discount 1
+            invoice_item_3 = InvoiceItem.create!(item_id: item_3.id, invoice_id: invoice.id, quantity: 15, unit_price: Faker::Number.between(from: 500, to: 1500), status: :packaged) #discount 2
+
+            bulk_discount_1 = merchant_1.bulk_discounts.create(discount_percent: 15, quantity_threshold: 10)
+            bulk_discount_2 = merchant_1.bulk_discounts.create(discount_percent: 20, quantity_threshold: 15)
+
+            visit admin_invoice_path(invoice)
+            expect(invoice_item_1.discount).to eq(0)
+            expect(invoice_item_2.discount).to eq(0)
+            expect(invoice_item_3.discount).to eq(0)
+
+            within("#invoice_info") do
+                select "completed", from: "invoice_status"
+                click_button 'Update Invoice'
+            end
+
+            invoice_item_1.reload
+            invoice_item_2.reload
+            invoice_item_3.reload
+
+            expect(invoice_item_1.discount).to eq(0)
+            expect(invoice_item_2.discount).to eq(15)
+            expect(invoice_item_3.discount).to eq(20)
+        end
+    end
 end
