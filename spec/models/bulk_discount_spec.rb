@@ -13,20 +13,23 @@ RSpec.describe BulkDiscount do
   end
 
   describe 'instance methods' do
+    before :each do
+      @merchant_1 = Merchant.create!(name: Faker::Name.unique.name)
+      @discount_1 = @merchant_1.bulk_discounts.create!(
+          discount_percent: 10,
+          quantity_threshold: 5
+        )
+      
+      @discount_2 = @merchant_1.bulk_discounts.create!(
+          discount_percent: 15,
+          quantity_threshold: 8
+        )
+    end
+    
     describe '#invoices_in_progress?' do
       it 'returns a boolean true if any invoices have a discount applied to them' do
-        merchant_1 = Merchant.create!(name: Faker::Name.unique.name)
-        discount_1 = merchant_1.bulk_discounts.create!(
-            discount_percent: 10,
-            quantity_threshold: 5
-          )
-        
-        discount_2 = merchant_1.bulk_discounts.create!(
-            discount_percent: 15,
-            quantity_threshold: 8
-          )
         customer = Customer.create!(first_name: Faker::Name.unique.first_name, last_name: Faker::Name.unique.last_name)
-        licorice = merchant_1.items.create!(name: "Licorice Funnels", description: "Licorice Balls", unit_price: 1200)
+        licorice = @merchant_1.items.create!(name: "Licorice Funnels", description: "Licorice Balls", unit_price: 1200)
         invoice_1 = customer.invoices.create!(status: "in_progress", created_at: "2012-01-30 14:54:09")
         invoice_2 = customer.invoices.create!(status: "in_progress", created_at: "2012-01-30 14:54:09")
         invoice_3 = customer.invoices.create!(status: "completed", created_at: "2012-01-30 14:54:09")
@@ -34,10 +37,25 @@ RSpec.describe BulkDiscount do
         invoice_item_2 = InvoiceItem.create!(invoice_id: invoice_2.id, item_id: licorice.id, quantity: 3, unit_price: 2700, status:"shipped" )
         invoice_item_3 = InvoiceItem.create!(invoice_id: invoice_3.id, item_id: licorice.id, quantity: 8, unit_price: 2700, status:"shipped" )
         
-        expect(discount_1.invoices_in_progress?).to eq(true)
-        expect(discount_2.invoices_in_progress?).to eq(false)
+        expect(@discount_1.invoices_in_progress?).to eq(true)
+        expect(@discount_2.invoices_in_progress?).to eq(false)
       end
     end
 
+    describe '#valid_discount?' do
+      it 'returns true if no other active discounts would prevent that discount from being applied' do
+        discount_3 = @merchant_1.bulk_discounts.create!(
+          discount_percent: 30,
+          quantity_threshold: 30
+        )
+        discount_4 = @merchant_1.bulk_discounts.create!(
+            discount_percent: 5,
+            quantity_threshold: 25
+        )
+
+        expect(discount_3.valid_discount?).to eq(true)
+        expect(discount_4.valid_discount?).to eq(false)
+      end
+    end
   end
 end
