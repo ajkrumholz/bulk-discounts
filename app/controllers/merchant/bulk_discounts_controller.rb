@@ -52,11 +52,16 @@ class Merchant::BulkDiscountsController < Merchant::BaseController
 
   def update
     @discount.update(bulk_discount_params)
-    if @discount.save
-      flash.notice = "Discount updated"
-      redirect_to merchant_bulk_discount_path(@merchant, @discount)
+    if @discount.valid_discount?
+      if @discount.save
+        flash.notice = "Discount updated"
+        redirect_to merchant_bulk_discount_path(@merchant, @discount)
+      else
+        flash.notice = @discount.errors.full_messages.to_sentence
+        redirect_to edit_merchant_bulk_discount_path(@merchant, @discount)
+      end
     else
-      flash.notice = @discount.errors.full_messages.to_sentence
+      flash.notice = "Can't edit a discount so that it will never be applied"
       redirect_to edit_merchant_bulk_discount_path(@merchant, @discount)
     end
   end
