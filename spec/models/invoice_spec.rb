@@ -163,7 +163,7 @@ RSpec.describe Invoice, type: :model do
         end
       end
 
-      describe '#merchant_discount_revenueed_revenue(merchant)' do
+      describe '#merchant_discount_revenue(merchant)' do
 
         it 'calculates disc. revenue when no discounts apply' do
           jewlery_city.bulk_discounts.create!(discount_percent: 20, quantity_threshold: 22)
