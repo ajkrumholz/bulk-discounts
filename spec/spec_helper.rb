@@ -26,13 +26,13 @@ RSpec.configure do |config|
     allow(GitHubFacade).to receive(:get_pr_total).and_return(119)
     allow(GitHubFacade).to receive(:repo_name).and_return('little-esty-shop')
     allow(GitHubFacade).to receive(:user_commits).and_return({"LlamaBack"=>4, "Alaina-Noel"=>13, "ajkrumholz"=>10, "Astrid-Hecht"=>3})
-    allow(HolidayFacade).to receive(:next_three_holidays).and_return(
-      [
-        {:date=>"2022-10-10", :localName=>"Columbus Day", :name=>"Columbus Day", :countryCode=>"US", :fixed=>false, :global=>false, :launchYear=>nil, :types=>["Public"]},
-        {:date=>"2022-11-11", :localName=>"Veterans Day", :name=>"Veterans Day", :countryCode=>"US", :fixed=>false, :global=>true, :counties=>nil, :launchYear=>nil, :types=>["Public"]},
-        {:date=>"2022-11-24", :localName=>"Thanksgiving Day", :name=>"Thanksgiving Day", :countryCode=>"US", :fixed=>false, :global=>true, :counties=>nil, :launchYear=>1863, :types=>["Public"]}
-      ]
-    )
+    @json_response = File.open("./fixtures/next_three_holidays.json") 
+    @uri = "https://date.nager.at/api/v3/NextPublicHolidays/US"
+    stub_request(:get, @uri).with(headers: {
+      'Accept'=>'*/*',
+      'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+      'User-Agent'=>'Ruby'
+      }).to_return(status: 200, body: @json_response, headers: {})
   end
 
   config.expect_with :rspec do |expectations|
