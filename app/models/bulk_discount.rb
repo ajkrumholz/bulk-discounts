@@ -9,19 +9,20 @@ class BulkDiscount < ApplicationRecord
 
   def invoices_in_progress?
     InvoiceItem.joins(:invoice, :item)
-      .select('items.merchant_id, invoices.status, invoice_items.*')
-      .where(
-        items: {merchant_id: self.merchant_id}, 
-        invoices: {status: :in_progress})
-        .any? do |invoice_item|
+               .select('items.merchant_id, invoices.status, invoice_items.*')
+               .where(
+                 items: { merchant_id: merchant_id },
+                 invoices: { status: :in_progress }
+               )
+               .any? do |invoice_item|
       invoice_item.applied_discount == self
     end
   end
 
   def valid_discount?
-    superceding = BulkDiscount.where(merchant_id: self.merchant_id)
-      .where("discount_percent > ?", self.discount_percent)
-      .where("quantity_threshold <= ?", self.quantity_threshold)
+    superceding = BulkDiscount.where(merchant_id: merchant_id)
+                              .where('discount_percent > ?', discount_percent)
+                              .where('quantity_threshold <= ?', quantity_threshold)
     if superceding.empty?
       true
     else

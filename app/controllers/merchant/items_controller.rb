@@ -1,17 +1,11 @@
 class Merchant::ItemsController < Merchant::BaseController
-  before_action :set_item, only: [:show, :edit, :update]
+  before_action :set_item, only: %i[show edit update]
 
-  def index
-  
-  end
+  def index; end
 
-  def show
+  def show; end
 
-  end
-
-  def new
-    
-  end
+  def new; end
 
   def create
     @item = @merchant.items.new(item_params)
@@ -20,9 +14,7 @@ class Merchant::ItemsController < Merchant::BaseController
     redirect_to merchant_items_path(@merchant)
   end
 
-  def edit
-    
-  end
+  def edit; end
 
   def update
     if params[:enabled].present?
@@ -30,17 +22,18 @@ class Merchant::ItemsController < Merchant::BaseController
       redirect_to merchant_items_path(@item.merchant)
     else
       @item.update(item_params)
-      flash.notice = "Item Successfully Updated"
+      flash.notice = 'Item Successfully Updated'
       redirect_to merchant_item_path(@item.merchant, @item)
     end
   end
 
   private
-    def item_params
-      params.permit(:name, :description, :unit_price, :enabled)
-    end
 
-    def set_item
-      @item = Item.find(params[:id])
-    end
+  def item_params
+    params.permit(:name, :description, :unit_price, :enabled)
+  end
+
+  def set_item
+    @item = Item.find(params[:id])
+  end
 end

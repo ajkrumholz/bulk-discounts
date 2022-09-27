@@ -1,14 +1,14 @@
 class InvoiceItem < ApplicationRecord
-  enum status: [ :pending, :packaged, :shipped ]
+  enum status: %i[pending packaged shipped]
   belongs_to :invoice
   belongs_to :item
 
   def invoice_item_revenue
     revenue = quantity * unit_price
-    if self.applicable_discounts == []
+    if applicable_discounts == []
       revenue
     else
-      discount = self.applied_discount.discount_percent
+      discount = applied_discount.discount_percent
       revenue * ((100 - discount) / 100.to_f)
     end
   end
@@ -22,7 +22,7 @@ class InvoiceItem < ApplicationRecord
   end
 
   def applied_discount_pct
-    if applied_discount != nil
+    if !applied_discount.nil?
       applied_discount.discount_percent
     else
       0

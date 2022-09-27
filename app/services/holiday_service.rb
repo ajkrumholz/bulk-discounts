@@ -6,4 +6,4 @@ class HolidayService
   end
 end
 
-#different method
+# different method

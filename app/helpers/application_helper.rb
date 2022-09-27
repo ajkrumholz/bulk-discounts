@@ -17,7 +17,6 @@ module ApplicationHelper
   end
 
   def price_round(totalcost)
-    '$' + sprintf("%.2f", totalcost/100.to_f)
+    '$' + format('%.2f', totalcost / 100.to_f)
   end
-
 end

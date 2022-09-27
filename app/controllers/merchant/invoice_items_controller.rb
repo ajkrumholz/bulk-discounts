@@ -7,6 +7,7 @@ class Merchant::InvoiceItemsController < Merchant::BaseController
   end
 
   private
+
   def invoice_item_params
     params.permit(:status)
   end
