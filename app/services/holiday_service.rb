@@ -5,3 +5,5 @@ class HolidayService
     HTTParty.get(path)
   end
 end
+
+#different method
