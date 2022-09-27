@@ -71,6 +71,10 @@ RSpec.describe 'admin invoice show' do
             expect(page).to have_content("#{invoice_item_1.quantity}")
             expect(page).to have_content(sprintf("%.2f",invoice_item_1.unit_price/100.to_f))
             expect(page).to have_content("#{invoice_item_1.status}")
+            expect(page).to have_content(invoice_item_2.item.name)
+            expect(page).to have_content("#{invoice_item_2.quantity}")
+            expect(page).to have_content(sprintf("%.2f",invoice_item_2.unit_price/100.to_f))
+            expect(page).to have_content("#{invoice_item_2.status}")
             expect(page).to_not have_content(sprintf('%.2f',invoice_item_6.unit_price/100.to_f))
         end
     end
