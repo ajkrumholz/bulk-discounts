@@ -12,7 +12,6 @@ RSpec.describe ApplicationHelper, type: :helper do
 
     describe '#price_round' do
       it 'formats prices to be in dollar format' do
-        expect(helper.price_round(23123)).to match(/$\d+.\d+/)
         expect(helper.price_round(23123)).to eq('$231.23')
         expect(helper.price_round(231)).to eq('$2.31')
         expect(helper.price_round(23)).to eq('$0.23')
