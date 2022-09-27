@@ -1,23 +1,22 @@
 class Admin::InvoicesController < ApplicationController
-    def index
-        @invoices = Invoice.all
-    end
-    
-    def show
-        @invoice = Invoice.find(params[:id])
-    end
+  def index
+    @invoices = Invoice.all
+  end
 
-    def update
-        @invoice = Invoice.find(params[:id])
-        @invoice.update(invoice_params)
-        if params[:invoice][:status] == "completed"
-            @invoice.set_invoice_item_discount
-        end
-        redirect_to admin_invoice_path(@invoice)
-    end
-    
-    private
-        def invoice_params
-            params.require(:invoice).permit(:status)
-        end
+  def show
+    @invoice = Invoice.find(params[:id])
+  end
+
+  def update
+    @invoice = Invoice.find(params[:id])
+    @invoice.update(invoice_params)
+    @invoice.set_invoice_item_discount if params[:invoice][:status] == 'completed'
+    redirect_to admin_invoice_path(@invoice)
+  end
+
+  private
+
+  def invoice_params
+    params.require(:invoice).permit(:status)
+  end
 end

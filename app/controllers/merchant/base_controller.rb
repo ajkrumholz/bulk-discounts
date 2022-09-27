@@ -1,7 +1,8 @@
 class Merchant::BaseController < ApplicationController
   before_action :set_merchant
 
-private
+  private
+
   def set_merchant
     @merchant = Merchant.find(params[:merchant_id])
   end

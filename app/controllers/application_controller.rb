@@ -3,7 +3,6 @@
 class ApplicationController < ActionController::Base
   before_action :get_pr_total, :user_names, :repo_name, :user_commits
 
-  
   private
 
   def user_names

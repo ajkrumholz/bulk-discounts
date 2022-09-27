@@ -15,7 +15,7 @@ class Admin::MerchantsController < ApplicationController
 
   def update
     @merchant = Merchant.find(params[:id])
-    if params[:name] && params[:name].gsub(' ', '') == ""
+    if params[:name] && params[:name].gsub(' ', '') == ''
       flash[:notice] = 'Empty name not permitted. Please try again.'
       redirect_to edit_admin_merchant_path(@merchant)
     elsif params[:name]
@@ -28,8 +28,7 @@ class Admin::MerchantsController < ApplicationController
     end
   end
 
-  def new
-  end
+  def new; end
 
   def create
     @merchant = Merchant.new(merchant_params)
@@ -39,6 +38,7 @@ class Admin::MerchantsController < ApplicationController
   end
 
   private
+
   def merchant_params
     params.permit(:name, :enabled)
   end
