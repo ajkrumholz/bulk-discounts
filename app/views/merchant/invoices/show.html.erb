@@ -29,16 +29,16 @@
     <th>Status</th>
   </tr>
   <% @invoice.merchant_invoice_items(@merchant).each do |invoice_item| %>
-    <tr  id="item_<%= invoice_item.item_id %>">
+    <tr id="item_<%= invoice_item.item_id %>">
       <td><%= invoice_item.item_name %></td>
       <td><%= invoice_item.quantity %></td>
       <td><%= price_round(invoice_item.unit_price) %></td>
       <% if invoice_item.applied_discount.present? %>
       <td><%= link_to "Applied #{invoice_item.applied_discount_pct}% Discount", merchant_bulk_discount_path(@merchant, invoice_item.applied_discount) %></td>
-      <td>
       <% else %>
-      <p></p>
+        <td></td>
       <% end %>
+      <td>
         <%= form_with url: merchant_invoice_item_path(@merchant, invoice_item), method: :patch do |f| %>
           <%= f.label :status, "Status" %>
           <%= f.select :status, options_for_select([:pending, :packaged, :shipped], selected: invoice_item.status) %>

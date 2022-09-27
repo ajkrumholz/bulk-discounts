@@ -14,7 +14,14 @@
 
 <h3>Invoice Items</h3>
 <table id="invoice_items" class='table_full'>
-  <tr><h4><th>Item Name</th><th>Quantity</th><th>Unit Price</th><th>Status</th></h4></tr>
+  <tr>
+    <h4>
+      <th>Item Name</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Status</th>
+    </h4>
+  </tr>
   <% @invoice.invoice_items.each do |item| %>
     <tr id="item_<%= item.id %>">
       <td id="name_<%= item.id %>"><%= item.item.name %></td>
