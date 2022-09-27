@@ -1,5 +1,0 @@
-[
-  {"date"=>"2022-10-10", "localName"=>"Columbus Day", "name"=>"Columbus Day", "countryCode"=>"US", "fixed"=>false, "global"=>false, "launchYear"=>nil, "types"=>["Public"]},
-  {"date"=>"2022-11-11", "localName"=>"Veterans Day", "name"=>"Veterans Day", "countryCode"=>"US", "fixed"=>false, "global"=>true, "counties"=>nil, "launchYear"=>nil, "types"=>["Public"]},
-  {"date"=>"2022-11-24", "localName"=>"Thanksgiving Day", "name"=>"Thanksgiving Day", "countryCode"=>"US", "fixed"=>false, "global"=>true, "counties"=>nil, "launchYear"=>1863, "types"=>["Public"]}
-]

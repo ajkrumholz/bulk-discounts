@@ -8,7 +8,6 @@ class HolidayFacade
     response = get_url('https://date.nager.at/api/v3/NextPublicHolidays/US')
     full_list = response.map { |holiday| Holiday.new(holiday) }
     full_list.first(3)
-    require 'pry'; binding.pry
   end
 
   private
