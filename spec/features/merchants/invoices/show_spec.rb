@@ -35,6 +35,13 @@ RSpec.describe 'Merchant Index Show Page' do
         expect(page).to have_content("Created at: #{invoice_1.created_at.strftime("%A, %B %d, %Y")}")
         expect(page).to have_content("#{alaina.name}")
       end
+
+      it 'links back to invoice index' do
+        visit merchant_invoice_path(jewlery_city, invoice_1)
+        expect(page).to have_link("Back to invoice index")
+        click_link("Back to invoice index")
+        expect(current_path).to eq(merchant_invoices_path(jewlery_city))
+      end
     end
 
     describe 'I see all of MY items on the invoice' do
