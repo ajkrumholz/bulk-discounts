@@ -87,6 +87,16 @@ RSpec.describe 'merchant dashboard show page', type: :feature do
       let!(:polina_invoice1_itemdainty_anklet) { InvoiceItem.create!(invoice_id: polina_invoice1.id, item_id: dainty_anklet.id, quantity: 6, unit_price: 270, status:1)}
       let!(:polina_invoice2_itemdainty_anklet) { InvoiceItem.create!(invoice_id: polina_invoice2.id, item_id: dainty_anklet.id, quantity: 1, unit_price: 270, status:1 )}
 
+      before :each do
+        @json_response = File.open("./fixtures/next_three_holidays.json") 
+        @uri = "https://date.nager.at/api/v3/NextPublicHolidays/US"
+        stub_request(:get, @uri).with(headers: {
+          'Accept'=>'*/*',
+          'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'User-Agent'=>'Ruby'
+          }).to_return(status: 200, body: @json_response, headers: {})
+      end
+      
       it 'Then I see the name of my merchant' do
 
         visit "/merchants/#{carly_silo.id}/dashboard"

@@ -2,18 +2,18 @@ require 'rails_helper'
 
 RSpec.describe HolidayFacade do
   describe 'class methods' do
-    # let(:json_response) { 
-    #   File.open("./fixtures/next_three_holidays.json") 
-    # }
-    # let(:uri) { "https://date.nager.at/api/v3/NextPublicHolidays/US" }
+    let(:json_response) { 
+      File.open("./fixtures/next_three_holidays.json") 
+    }
+    let(:uri) { "https://date.nager.at/api/v3/NextPublicHolidays/US" }
 
-    # before :each do
-    #   stub_request(:get, uri).with(headers: {
-    #     'Accept'=>'*/*',
-    #     'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-    #     'User-Agent'=>'Ruby'
-    #     }).to_return(status: 200, body: json_response, headers: {})
-    # end
+    before :each do
+      stub_request(:get, uri).with(headers: {
+        'Accept'=>'*/*',
+        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'User-Agent'=>'Ruby'
+        }).to_return(status: 200, body: json_response, headers: {})
+    end
 
     describe '.get_url' do
       it 'calls on the HolidayService and returns a formatted json response body' do
