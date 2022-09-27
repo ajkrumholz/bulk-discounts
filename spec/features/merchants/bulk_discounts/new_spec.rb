@@ -51,10 +51,11 @@ RSpec.describe 'new merchant bulk discount page' do
     end
 
     describe 'when I fill out the form with valid data and click submit' do
-      let!(:new_disc_percent) { Faker::Number.number(digits: 2)}
-      let!(:new_qty_threshold) { Faker::Number.number(digits: 2)}
+      let!(:new_disc_percent) {30}
+      let!(:new_qty_threshold) {20}
 
       before :each do
+        
         fill_in :bulk_discount_discount_percent, with: new_disc_percent
         fill_in :bulk_discount_quantity_threshold, with: new_qty_threshold
         click_on "Add new discount"
