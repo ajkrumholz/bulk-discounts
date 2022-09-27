@@ -56,13 +56,13 @@ let!(:merchant_1) { Merchant.create!(name: Faker::Name.unique.name) }
 
     it 'updates the form and returns me to the show page, where I see the updated values' do
 
-      fill_in(:bulk_discount_discount_percent, with: new_percent)
-      fill_in(:bulk_discount_quantity_threshold, with: new_quantity)
+      fill_in(:bulk_discount_discount_percent, with: 30)
+      fill_in(:bulk_discount_quantity_threshold, with: 15)
       click_on "Update Discount"
 
       expect(page).to have_current_path(merchant_bulk_discount_path(merchant_1, discount_1))
-      expect(page).to have_content("#{new_percent}% Discount")
-      expect(page).to have_content("On orders of #{new_quantity} or more items")
+      expect(page).to have_content("#{30}% Discount")
+      expect(page).to have_content("On orders of #{15} or more items")
     end
     
   end
