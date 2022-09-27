@@ -34,6 +34,12 @@ RSpec.describe "merchant bulk discount show page" do
       expect(page).to have_link("Edit this discount")
     end
 
+    it 'links back to the index' do
+      expect(page).to have_link("Back to discounts index")
+      click_link "Back to discounts index"
+      expect(current_path).to eq(merchant_bulk_discounts_path(merchant_1))
+    end
+
     describe 'when I click on this link' do
       it 'takes me to the discount edit page' do
         click_link("Edit this discount")
