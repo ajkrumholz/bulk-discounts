@@ -39,6 +39,17 @@ RSpec.describe 'new merchant bulk discount page' do
       end
     end
 
+    describe 'when I attempt to create a bulk discount that cannot be applied' do
+      it 'supples a helpful error message' do
+        fill_in :bulk_discount_discount_percent, with: 5
+        fill_in :bulk_discount_quantity_threshold, with: 30
+        click_on "Add new discount"
+
+        expect(page).to have_current_path(new_merchant_bulk_discount_path(merchant_1))
+        expect(page).to have_content("Can't create a discount that will never be applied")
+      end
+    end
+
     describe 'when I fill out the form with valid data and click submit' do
       let!(:new_disc_percent) { Faker::Number.number(digits: 2)}
       let!(:new_qty_threshold) { Faker::Number.number(digits: 2)}
